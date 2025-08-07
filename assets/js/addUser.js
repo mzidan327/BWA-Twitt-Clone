@@ -7,9 +7,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const instantFeedback = document.getElementById("instantFeedback");
 
+  instantFeedback.style.display = "none";
+
   const userManager = new User();
 
-  // membuat format tanggal yang disimpan seperti 'yyyy-mm-dd'
+  // membuat format tanggal yang disimpan speerti 'yyyy-mm-dd'
   const now = new Date();
   const year = now.getFullYear();
   const month = String(now.getMonth() + 1).padStart(2, "0");
@@ -30,7 +32,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (result.success) {
       instantFeedback.style.display = "none";
-      // arahkan pengguna ke halaman lain yaitu login
+      // arahkan pengguna kepada halaman lain yaitu login
       return (window.location.href = "../login.html");
     } else {
       instantFeedback.style.display = "flex";

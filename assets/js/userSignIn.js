@@ -5,6 +5,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const instantFeedback = document.getElementById("instantFeedback");
 
+  instantFeedback.style.display = "none";
+
   const userManager = new User();
 
   formManager.addEventListener("submit", (event) => {
@@ -20,7 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (result.success) {
       instantFeedback.style.display = "none";
       localStorage.setItem("usernameLoggedIn", userUsername.value);
-      // arahkan pengguna ke halaman lain yaitu login
+      // arahkan pengguna kepada halaman lain yaitu login
       return (window.location.href = "../index.html");
     } else {
       instantFeedback.style.display = "flex";

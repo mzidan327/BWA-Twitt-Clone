@@ -3,11 +3,11 @@ class User {
     this._users = null;
   }
 
-  getUSers() {
+  getUsers() {
     if (this._users === null) {
       try {
-        const storedUser = localStorage.getItem("users");
-        this._users = storedUser ? JSON.parse(storedUser) : [];
+        const storedUsers = localStorage.getItem("users");
+        this._users = storedUsers ? JSON.parse(storedUsers) : [];
       } catch (error) {
         return (this._users = []);
       }
@@ -50,7 +50,7 @@ class User {
     if (password.length < 8) {
       return {
         success: false,
-        error: "password password at least 8 character",
+        error: "password at least has 8 characters",
       };
     }
 
@@ -60,7 +60,7 @@ class User {
       ...userData,
     };
 
-    const users = this.getUSers();
+    const users = this.getUsers();
     users.push(newUser);
 
     try {
@@ -93,7 +93,7 @@ class User {
       };
     }
 
-    const userExists = this.getUSers().some(
+    const userExists = this.getUsers().some(
       (user) =>
         user.username.toLowerCase() === username.toLowerCase() &&
         user.password === password
@@ -106,7 +106,7 @@ class User {
     } else {
       return {
         success: false,
-        error: "username atau password salah",
+        error: "Username atau password salah!",
       };
     }
   }
