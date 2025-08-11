@@ -2,7 +2,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const usernameLoggedIn = localStorage.getItem("usernameLoggedIn");
 
   const instantFeedback = document.getElementById("instantFeedback");
-
   instantFeedback.style.display = "none";
 
   const twittForm = document.getElementById("twittForm");
@@ -47,7 +46,7 @@ document.addEventListener("DOMContentLoaded", () => {
       twittContent: twittContent.value,
       twittUsernameOwner: usernameLoggedIn,
       twittFeeling: selectedFeeling,
-      twittCreateAt: `${year}-${month}-${day}`,
+      twittCreatedAt: `${year}-${month}-${day}`,
     };
 
     const result = twittManager.saveTwitt(twittData);
@@ -70,11 +69,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const existingTwitts = twittManager.getTwitts();
   const existingLoveTwitts = twittManager.getLoveTwitts();
 
-  const hasLiked = twittManager.userHasLikedTwittValidate(
-    twitt.id,
-    usernameLoggedIn
-  );
-
   function displayAllTwitts(twitts = existingTwitts) {
     if (twitts.lenght === 0) {
       console.log("tidak ada twitts tersedia");
@@ -95,14 +89,19 @@ document.addEventListener("DOMContentLoaded", () => {
           (loveTwitt) => loveTwitt.twittId === twitt.id
         );
         const countLoveTwitts = getAllLoveTwitts.length;
+        const hasLiked = twittManager.userHasLikedTwittValidate(
+          twitt.id,
+          usernameLoggedIn
+        );
 
         const itemTwitt = document.createElement("div");
         itemTwitt.className = "bg-primary p-4 border-b-2 border-line";
-        itemTwitt.id = `twitt - $(twitt.id)`;
+        itemTwitt.id = `twitt-${twitt.id}`;
         itemTwitt.innerHTML = `
         <div class="flex items-center justify-between">
               <div class="flex items-center justify-start">
                 <img
+                  id="visitProfile-${ownerTwitt.username}"
                   src="${ownerTwitt.avatar}"
                   alt="search"
                   srcset=""
@@ -121,7 +120,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     </p>
                   </div>
                   <p class="text-username text-sm">
-                    @${twitt.twittUsernameOwner} • ${twitt.twittCreateAt}
+                    @${twitt.twittUsernameOwner} • ${twitt.twittCreatedAt}
                   </p>
                 </div>
               </div>
@@ -147,24 +146,40 @@ document.addEventListener("DOMContentLoaded", () => {
                 <p id="totalLikeThatTwitt" class="text-sm font-normal text-like">${countLoveTwitts} Likes
                 </p>
                 </a>
-                <a
+                ${
+                  twitt.twittUsernameOwner === usernameLoggedIn
+                    ? `<a
+                  id="deleteTwitt-${twitt.id}"
                   href="#"
                   class="cursor flex justify-start items-center w-[93px] gap-1.5"
                 >
                   <img src="assets/trash.svg" alt="heart" />
                   <p class="text-sm font-normal text-username">Delete</p>
-                </a>
-                <a
+                </a>`
+                    : `<a
                   href="#"
                   class="flex justify-start items-center w-[93px] gap-1.5"
                 >
                   <img src="assets/warning-2.svg" />
                   <p class="text-sm font-normal text-username">Report</p>
-                </a>
+                </a>`
+                }
               </div>
             </div>`;
 
         twittsWrapper.appendChild(itemTwitt);
+
+        itemTwitt
+          .querySelector(`#visitProfile-${ownerTwitt.username}`)
+          .addEventListener("click", function (event) {
+            event.preventDefault();
+            localStorage.setItem(
+              "usernameProfileChosen",
+              `${ownerTwitt.username}`
+            );
+            // arahkan pengguna kepada halaman lain yaitu login
+            return (window.location.href = "../profile.html");
+          });
 
         const totalLikeThatTwitt = itemTwitt.querySelector(
           "#totalLikeThatTwitt"
@@ -193,6 +208,23 @@ document.addEventListener("DOMContentLoaded", () => {
               instantFeedback.textContent = result.error;
             }
           });
+
+        const deleteTwittButton = itemTwitt.querySelector(
+          `#deleteTwitt-${twitt.id}`
+        );
+
+        if (deleteTwittButton) {
+          deleteTwittButton.addEventListener("click", function (event) {
+            event.preventDefault();
+            const result = twittManager.deleteTwitt(twitt.id);
+            if (result.success) {
+              displayAllTwitts(twittManager.getTwitts());
+            } else {
+              instantFeedback.style.display = "flex";
+              instantFeedback.textContent = result.error;
+            }
+          });
+        }
       });
     }
   }
